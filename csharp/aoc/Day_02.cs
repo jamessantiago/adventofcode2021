@@ -10,27 +10,27 @@ namespace aoc
 {    
     public class Day_02 : BaseDay
     {
-        private readonly List<(string, int)> _input;
+        private readonly List<(string dir, int amount)> _input;
 
         public Day_02()
         {
-            _input = File.ReadLines(InputFilePath).Select(d => (d.Split(' ')[0], int.Parse(d.Split(' ')[1]))).ToList();
+            _input = File.ReadLines(InputFilePath).Select(d => d.Split(' ')).Select(d => (d[0], int.Parse(d[1]))).ToList();
         }
 
         public override ValueTask<string> Solve_1()
         {
             int horiz = 0, vert = 0;
-            foreach (var dir in _input)
+            foreach (var (dir, amount) in _input)
             {
-                if (dir.Item1 == "forward")
+                if (dir == "forward")
                 {
-                    horiz += dir.Item2;
-                } else if (dir.Item1 == "down")
+                    horiz += amount;
+                } else if (dir == "down")
                 {
-                    vert += dir.Item2;
-                } else if (dir.Item1 == "up")
+                    vert += amount;
+                } else if (dir == "up")
                 {
-                    vert -= dir.Item2;
+                    vert -= amount;
                 }
             }
             return new((horiz * vert).ToString());
@@ -39,20 +39,20 @@ namespace aoc
         public override ValueTask<string> Solve_2()
         {
             long horiz = 0, vert = 0, aim = 0;
-            foreach (var dir in _input)
+            foreach (var (dir, amount) in _input)
             {
-                if (dir.Item1 == "forward")
+                if (dir == "forward")
                 {
-                    horiz += dir.Item2;
-                    vert += dir.Item2 * aim;
+                    horiz += amount;
+                    vert += amount * aim;
                 }
-                else if (dir.Item1 == "down")
+                else if (dir == "down")
                 {
-                    aim += dir.Item2;
+                    aim += amount;
                 }
-                else if (dir.Item1 == "up")
+                else if (dir == "up")
                 {
-                    aim -= dir.Item2;
+                    aim -= amount;
                 }
             }
             return new((horiz * vert).ToString());
