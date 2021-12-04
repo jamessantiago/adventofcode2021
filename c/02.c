@@ -34,11 +34,11 @@ main ()
   char buf[256];
   int result1[2] = { 0 };
   int result2[3] = { 0 };
-  int *pbuf = malloc (2);
-
+  int *pbuf = NULL;
+  
+  pbuf = malloc (2);
   f = fopen ("02.txt", "r");
-  if (f == NULL)
-    goto done;
+  if (pbuf == NULL || f == NULL) goto done;
 
   while (fgets (buf, 256, f))
     {
@@ -65,6 +65,6 @@ main ()
   printf ("Result 2: %d\n", result2[0] * result2[1]);
 
 done:
-  if (f)
-    fclose (f);
+  if (f) fclose (f);
+  if (pbuf) free(pbuf);
 }
