@@ -13,7 +13,6 @@ namespace aoc
         private readonly Dictionary<(int x, int y), int> _input;
         private readonly int xmax;
         private readonly int ymax;
-        private event EventHandler<((int x, int y) p, int v)> valueChanged;
 
         public Day_11()
         {
@@ -79,11 +78,17 @@ namespace aoc
 
         public override ValueTask<string> Solve_2()
         {
-            valueChanged += (o, input) =>
+            var cl = new object();
+            var updateConsole = new Action<((int x, int y) p, int v)>((input) =>
             {
-                Console.SetCursorPosition(input.p.x + 2, input.p.y + 1);
-                Console.Write(input.v);
-            };
+                lock (cl)
+                {
+                    Console.SetCursorPosition(input.p.x + 2, input.p.y + 1);
+                    if (input.v == 0) Console.ForegroundColor = ConsoleColor.Red;
+                    else Console.ResetColor();
+                    Console.Write(input.v > 9 ? 0 : input.v);
+                }
+            });
 
             var grid = new Dictionary<(int x, int y), int>(_input);
 
@@ -93,10 +98,10 @@ namespace aoc
                 foreach (var k in grid.Keys)
                 {
                     grid[k]++;
-                    valueChanged?.Invoke(this, (k, grid[k]));
+                    Task.Run(() => updateConsole((k, grid[k])));
                 }
 
-                    var flashed = new HashSet<(int x, int y)>();
+                var flashed = new HashSet<(int x, int y)>();
                 var queue = new Queue<(int x, int y)>();
                 foreach (var s in grid.Where(d => d.Value > 9)) queue.Enqueue(s.Key);
 
@@ -111,11 +116,12 @@ namespace aoc
                             if (grid[n] == 0) continue;
                             grid[n]++;
                             queue.Enqueue(n);
-                            valueChanged?.Invoke(this, (n, grid[n]));
+                            Task.Run(() => updateConsole((n, grid[n])));
                         }
                     }
                 }
                 if (flashed.Count == grid.Count) break;
+                Thread.Sleep(150);
             }
             i++;
             Console.WriteLine("\n\n\n");
