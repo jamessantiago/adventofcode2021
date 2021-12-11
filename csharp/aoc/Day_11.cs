@@ -13,6 +13,7 @@ namespace aoc
         private readonly Dictionary<(int x, int y), int> _input;
         private readonly int xmax;
         private readonly int ymax;
+        private event EventHandler<((int x, int y) p, int v)> valueChanged;
 
         public Day_11()
         {
@@ -78,14 +79,24 @@ namespace aoc
 
         public override ValueTask<string> Solve_2()
         {
+            valueChanged += (o, input) =>
+            {
+                Console.SetCursorPosition(input.p.x + 2, input.p.y + 1);
+                Console.Write(input.v);
+            };
+
             var grid = new Dictionary<(int x, int y), int>(_input);
 
             int i = 0;
             for (; ; i++)
             {
-                foreach (var k in grid.Keys) grid[k]++;
+                foreach (var k in grid.Keys)
+                {
+                    grid[k]++;
+                    valueChanged?.Invoke(this, (k, grid[k]));
+                }
 
-                var flashed = new HashSet<(int x, int y)>();
+                    var flashed = new HashSet<(int x, int y)>();
                 var queue = new Queue<(int x, int y)>();
                 foreach (var s in grid.Where(d => d.Value > 9)) queue.Enqueue(s.Key);
 
@@ -100,12 +111,14 @@ namespace aoc
                             if (grid[n] == 0) continue;
                             grid[n]++;
                             queue.Enqueue(n);
+                            valueChanged?.Invoke(this, (n, grid[n]));
                         }
                     }
                 }
                 if (flashed.Count == grid.Count) break;
             }
             i++;
+            Console.WriteLine("\n\n\n");
             return new(i.ToString());
         }
     }
