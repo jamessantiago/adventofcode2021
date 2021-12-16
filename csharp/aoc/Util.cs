@@ -32,5 +32,17 @@ namespace aoc
         {
             return grid.YLen() - 1;
         }
+
+        public static string HexToBinary(this char val)
+        {
+            string hexabet = "0123456789ABCDEF";
+            int lastD = hexabet.IndexOf(val);
+            return Convert.ToString(lastD, 2).PadLeft(4, '0');
+        }
+
+        public static int ToDecimal(this string val)
+        {
+            return Convert.ToInt32(val, 2);
+        }
     }
 }
