@@ -40,9 +40,9 @@ namespace aoc
             return Convert.ToString(lastD, 2).PadLeft(4, '0');
         }
 
-        public static int ToDecimal(this string val)
+        public static long ToDecimal(this string val)
         {
-            return Convert.ToInt32(val, 2);
+            return Convert.ToInt64(val, 2);
         }
     }
 }

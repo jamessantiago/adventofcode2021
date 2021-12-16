@@ -21,10 +21,10 @@ namespace aoc
 
         public class Packet
         {
-            public int version;
-            public int packetType;
-            public int literalValue;
-            public int length;
+            public long version;
+            public long packetType;
+            public long literalValue;
+            public long length;
             public List<Packet> packets = new List<Packet>();
         }
 
@@ -44,8 +44,8 @@ namespace aoc
                     sb.Append(rawValue.AsSpan(i + 1, 4));
                     if (rawValue[i] == '0') break;
                 }
-                if (packet.length % 4 != 0)
-                    packet.length += 4 - (packet.length % 4);
+                //if (packet.length % 4 != 0)
+                //    packet.length += (4 - (packet.length % 4));
                 packet.literalValue = sb.ToString().ToDecimal();
                 return packet;
             } else
@@ -54,7 +54,7 @@ namespace aoc
                 if (rawPacket[6] == '0')
                 {
                     var subPacketLengths = rawPacket.Substring(7, 15).ToDecimal();
-                    packet.length += subPacketLengths + 16;
+                    packet.length += subPacketLengths + 15;
                     var subPacketPos = 22;
                     while (subPacketLengths > 0)
                     {
@@ -65,25 +65,51 @@ namespace aoc
                         }
                         var newPacket = ParsePacket(rawPacket[subPacketPos..]);
                         subPacketLengths -= newPacket.length;
-                        subPacketPos += newPacket.length - 1;
+                        subPacketPos += (int)newPacket.length;
                         packet.packets.Add(newPacket);
                     }
-                    return packet;
                 } else
                 {
                     var numPackets = rawPacket.Substring(7, 11).ToDecimal();
+                    packet.length += 11;
                     var subPacketPos = 18;
                     while (numPackets > 0)
                     {
                         var newPacket = ParsePacket(rawPacket[subPacketPos..]);
-                        //packet.length += newPacket.length;
-                        subPacketPos += newPacket.length - 1;
+                        packet.length += newPacket.length;
+                        subPacketPos += (int)newPacket.length;
                         packet.packets.Add(newPacket);
                         numPackets--;
                     }
-                    packet.length = packet.packets.Sum(d => d.length); // ?
-                    return packet;
                 }
+
+                switch (packet.packetType)
+                {
+                    case 0:
+                        packet.literalValue = packet.packets.Sum(d => d.literalValue);
+                        break;
+                    case 1:
+                        packet.literalValue = packet.packets.Select(d => d.literalValue).Aggregate(1L, (a, d) => a * d);
+                        break;
+                    case 2:
+                        packet.literalValue = packet.packets.Min(d => d.literalValue);
+                        break;
+                    case 3:
+                        packet.literalValue = packet.packets.Max(d => d.literalValue);
+                        break;
+                    case 5:
+                        packet.literalValue = packet.packets[0].literalValue > packet.packets[1].literalValue ? 1 : 0;
+                        break;
+                    case 6:
+                        packet.literalValue = packet.packets[0].literalValue < packet.packets[1].literalValue ? 1 : 0;
+                        break;
+                    case 7:
+                        packet.literalValue = packet.packets[0].literalValue == packet.packets[1].literalValue ? 1 : 0;
+                        break;
+                    default:
+                        throw new Exception();
+                }
+                return packet;
             }
 
             throw new Exception();
@@ -113,8 +139,13 @@ namespace aoc
 
         public override ValueTask<string> Solve_2()
         {
-            
-            return new("");
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in _input.ToCharArray()) sb.Append(c.HexToBinary());
+            var encap = sb.ToString();
+
+            var packet = ParsePacket(encap);
+
+            return new(packet.literalValue.ToString());
         }
                 
     }
