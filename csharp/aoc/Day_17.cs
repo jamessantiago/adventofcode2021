@@ -46,7 +46,7 @@ namespace aoc
             return new(maxy.ToString());
         }
 
-public override ValueTask<string> Solve_2()
+        public override ValueTask<string> Solve_2()
         {
             long total = 0;
             for (long vx = (long)Math.Sqrt(area[xmin]) / 2; vx <= area[xmax]; vx++)
@@ -66,6 +66,6 @@ public override ValueTask<string> Solve_2()
                 }
             }
             return new(total.ToString());
-               
+        }  
     }
 }
