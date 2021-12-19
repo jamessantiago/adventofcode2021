@@ -44,5 +44,11 @@ namespace aoc
         {
             return Convert.ToInt64(val, 2);
         }
+
+        public static void AddOrAppend(this Dictionary<int, List<(int x, int y, int z)>> dict, int key, (int x, int y, int z) value)
+        {
+            if (dict.ContainsKey(key)) dict[key].Add(value);
+            else dict.Add(key, new List<(int x, int y, int z)> { value });
+        }
     }
 }
