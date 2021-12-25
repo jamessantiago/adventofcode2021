@@ -33,6 +33,26 @@ namespace aoc
             return grid.YLen() - 1;
         }
 
+        public static int XLen(this char[,] grid)
+        {
+            return grid.GetLength(0);
+        }
+
+        public static int YLen(this char[,] grid)
+        {
+            return grid.GetLength(1);
+        }
+
+        public static int XMax(this char[,] grid)
+        {
+            return grid.XLen() - 1;
+        }
+
+        public static int YMax(this char[,] grid)
+        {
+            return grid.YLen() - 1;
+        }
+
         public static string HexToBinary(this char val)
         {
             string hexabet = "0123456789ABCDEF";
